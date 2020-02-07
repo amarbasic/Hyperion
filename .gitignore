@@ -1,5 +1,6 @@
 *.py[co]
 *.DS_*
+
 # Packages
 *.egg
 *.egg-info
@@ -22,6 +23,9 @@ pip-log.txt
 
 #Translations
 *.mo
+
+# Editors
+.vscode
 
 # Developer
 venv
