@@ -1,15 +1,15 @@
 """Customer services"""
-from src.db import db
-from src.models import customers as customer_models
+from hyperion.db import db
+from hyperion.models import customers as customer_models
 
 
-def get_customer_list():
+def get_customer_list(query_params):
     """Get customer list"""
     return [
         {"id": obj.id, "name": obj.name} for obj in customer_models.Customer.query.all()
     ]
     # or
-    # from src.queries import customers as customer_queries
+    # from hyperion.queries import customers as customer_queries
     # return customer_queries.write_complex_query_here()
 
 

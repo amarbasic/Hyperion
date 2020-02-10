@@ -1,4 +1,4 @@
-from src.db import db
+from hyperion.db import db
 
 
 class Customer(db.Model):

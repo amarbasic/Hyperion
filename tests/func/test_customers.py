@@ -1,6 +1,6 @@
 """Functional tests for customers"""
-from src.views import base as view_base
-from src.db import db
+from hyperion.views import base as view_base
+from hyperion.db import db
 from . import fixtures
 
 

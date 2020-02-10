@@ -1,7 +1,7 @@
 """Functional fixtures"""
 import pytest
 
-from src.models import customers as customer_models
+from hyperion.models import customers as customer_models
 
 
 @pytest.fixture

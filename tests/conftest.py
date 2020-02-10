@@ -1,8 +1,8 @@
 """Pytest conf"""
 import pytest
 
-from src.app import create_app
-from src.config import TEST_CONFIG
+from hyperion.app import create_app
+from hyperion.config import TEST_CONFIG
 
 
 @pytest.fixture(scope="module")
