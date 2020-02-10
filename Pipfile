@@ -11,7 +11,9 @@ black = "*"
 [packages]
 flask = "*"
 flask-sqlalchemy = "*"
+flask-migrate = "*"
 cerberus = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.7"

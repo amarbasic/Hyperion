@@ -28,4 +28,4 @@ def create_customer():
 def seed():
     """Seed customers"""
     customer_services.seed_customers(10)
-    return response(customer_services.get_customer_list())
+    return response(customer_services.get_customer_list(None))

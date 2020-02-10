@@ -1,4 +1,5 @@
 """Application configuration"""
+import os
 
 
 class Config(object):
@@ -14,6 +15,7 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI")
 
 
 class TestingConfig(Config):
