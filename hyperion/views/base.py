@@ -1,5 +1,8 @@
 """Base view functions"""
+from functools import wraps
+
 from flask import jsonify, Response, request
+from cerberus import Validator
 
 from hyperion import exceptions
 
@@ -21,24 +24,42 @@ def response(
 
 
 def validate_request_body(schema):
-    """Validate request body"""
+    """Validate request body
+    
+    :schema: Cerberus schem object as dict
+    """
 
-    def _validate_body():
-        v = Validator(schema)
+    def _validate_body(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            v = Validator(schema)
 
-        if not v.validate(request.get_json()):
-            raise exceptions.HyperionError("Invalid input data.")
+            if not v.validate(request.get_json()):
+                raise exceptions.HyperionError("Invalid input data.")
+
+            return f(*args, **kwargs)
+
+        return wrapper
 
     return _validate_body
 
 
 def validate_query_params(schema):
-    """Validate request query params"""
+    """Validate request query params
+    
+    :schema: Cerberus schem object as dict
+    """
 
-    def _validate_query_params():
-        v = Validator(schema)
+    def _validate_query_params(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            v = Validator(schema)
 
-        if not v.validate(request.args):
-            raise exceptions.HyperionError("Invalid query params.")
+            if not v.validate(request.args):
+                raise exceptions.HyperionError("Invalid query params.")
+
+            return f(*args, **kwargs)
+
+        return wrapper
 
     return _validate_query_params
