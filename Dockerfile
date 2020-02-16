@@ -15,7 +15,7 @@ RUN pipenv install
 
 COPY hyperion hyperion
 COPY migrations migrations
-COPY server.py boot.sh ./
+COPY wsgi.py boot.sh ./
 
 EXPOSE 5000
 ENTRYPOINT ["sh", "boot.sh"]

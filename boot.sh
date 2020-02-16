@@ -1,2 +1,2 @@
 #!/bin/sh
-exec pipenv run gunicorn -b :5000 server:app
+exec pipenv run gunicorn -b :5000 wsgi:app -w 5
