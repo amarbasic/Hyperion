@@ -1,28 +1,19 @@
 """Customer services"""
 from hyperion.db import db
-from hyperion.models import customers as customer_models
-
-
-def get_customer_list(query_params):
-    """Get customer list"""
-    return [
-        {"id": obj.id, "name": obj.name} for obj in customer_models.Customer.query.all()
-    ]
-    # or
-    # from hyperion.queries import customers as customer_queries
-    # return customer_queries.write_complex_query_here()
+from hyperion.models import Customer
 
 
 def seed_customers(total_seed):
+    db.create_all()
     for i in range(total_seed):
-        db.session.add(customer_models.Customer(name=f"Customer {i}"))
+        db.session.add(Customer(name=f"Customer {i}"))
 
     db.session.commit()
 
 
 def create_customer(customer_data):
     """Create a customer"""
-    customer_obj = customer_models.Customer(**customer_data)
+    customer_obj = Customer(**customer_data)
     db.session.add(customer_obj)
     db.session.commit()
 

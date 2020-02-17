@@ -1,27 +1,27 @@
 """Functional tests for customers"""
-from hyperion.views import base as view_base
+from hyperion.common import status
 from hyperion.db import db
 from .fixtures import *
 
 
-def test_get_list_customers(client, db_session, make_customer_list):
+def test_get_list_customers_with_filters(client, db_session, make_customer_list):
     """Test should return list of customers"""
     # Arange
     customers = make_customer_list(10)
 
     # Act
-    response = client.get("customers/?name=test")
+    response = client.get("customers/?name=customer")
     response_data = response.get_json()
 
     # Assert
-    assert response.status_code == view_base.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK
     assert len(response_data["data"]) == len(customers)
 
 
 def test_get_customers_no_query_param_should_return_400(
     client, db_session, make_customer_list
 ):
-    """Test should return 400 when query param is missing"""
+    """Test should return customers"""
     # Arange
     customers = make_customer_list(10)
 
@@ -30,4 +30,5 @@ def test_get_customers_no_query_param_should_return_400(
     response_data = response.get_json()
 
     # Assert
-    assert response.status_code == view_base.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response_data["data"]) == len(customers)

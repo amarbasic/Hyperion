@@ -4,15 +4,15 @@ from functools import wraps
 from flask import jsonify, Response, request
 from cerberus import Validator
 
+from hyperion.common import status
 from hyperion import exceptions
-
-HTTP_200_OK = 200
-HTTP_400_BAD_REQUEST = 400
-HTTP_500_SERVER_ERROR = 500
 
 
 def response(
-    data: dict = {}, message: str = None, errors: list = None, status: int = HTTP_200_OK
+    data: dict = {},
+    message: str = None,
+    errors: list = None,
+    status: int = status.HTTP_200_OK,
 ) -> Response:
     """Create API JSON response
 
@@ -25,7 +25,7 @@ def response(
 
 def validate_request_body(schema):
     """Validate request body
-    
+
     :schema: Cerberus schem object as dict
     """
 
@@ -46,7 +46,7 @@ def validate_request_body(schema):
 
 def validate_query_params(schema):
     """Validate request query params
-    
+
     :schema: Cerberus schem object as dict
     """
 

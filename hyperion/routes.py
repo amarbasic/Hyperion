@@ -1,4 +1,5 @@
 """Init views"""
+from hyperion.common import status
 from hyperion import views
 from . import exceptions
 
@@ -26,8 +27,8 @@ def register_error_handlers(app=None):
 
     @app.errorhandler(exceptions.HyperionError)
     def handle_hyperion_error(error):
-        return views.response(message=str(error), status=views.HTTP_400_BAD_REQUEST)
+        return views.response(message=str(error), status=status.HTTP_400_BAD_REQUEST)
 
     @app.errorhandler(Exception)
     def handle_exception(error):
-        return views.response(message=str(error), status=views.HTTP_500_SERVER_ERROR)
+        return views.response(message=str(error), status=status.HTTP_500_SERVER_ERROR)
