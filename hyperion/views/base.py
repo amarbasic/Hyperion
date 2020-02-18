@@ -26,7 +26,7 @@ def response(
 def validate_request_body(schema):
     """Validate request body
 
-    :schema: Cerberus schem object as dict
+    :schema: Cerberus schema object as dict
     """
 
     def _validate_body(f):
@@ -47,7 +47,7 @@ def validate_request_body(schema):
 def validate_query_params(schema):
     """Validate request query params
 
-    :schema: Cerberus schem object as dict
+    :schema: Cerberus schema object as dict
     """
 
     def _validate_query_params(f):

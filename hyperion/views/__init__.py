@@ -1,10 +1,10 @@
 """Views package"""
-from .customers import bp as customer_api
-from .healthcheck import bp as healthcheck_api
+from .customers import customer_bp
+from .healthcheck import healthcheck_bp
 from .base import response
 
 __all__ = [
     "response",
-    "customer_api",
-    "healthcheck_api",
+    "customer_bp",
+    "healthcheck_bp",
 ]

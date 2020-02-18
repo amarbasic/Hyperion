@@ -8,24 +8,24 @@ from hyperion.queries import customers as customer_queries
 from hyperion.exceptions import HyperionError
 
 
-bp = Blueprint("customers", __name__, url_prefix="/customers")
+customer_bp = Blueprint("customers", __name__, url_prefix="/customers")
 
 
-@bp.route("/")
+@customer_bp.route("/")
 @validate_query_params(customer_validators.customer_query_schema)
 def get_customers():
     """Get list of customers"""
     return response(customer_queries.get_customer_list(request.args))
 
 
-@bp.route("/", methods=["POST"])
+@customer_bp.route("/", methods=["POST"])
 @validate_request_body(customer_validators.create_customer_schema)
 def create_customer():
     """Create customer"""
     return customer_services.create_customer(request.get_json())
 
 
-@bp.route("/seed")
+@customer_bp.route("/seed/")
 def seed():
     """Seed customers"""
     customer_services.seed_customers(10)

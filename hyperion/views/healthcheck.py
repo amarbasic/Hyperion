@@ -4,10 +4,10 @@ from flask import Blueprint
 from .base import response
 
 
-bp = Blueprint("healthcheck", __name__, url_prefix="/healthcheck")
+healthcheck_bp = Blueprint("healthcheck", __name__, url_prefix="/healthcheck")
 
 
-@bp.route("/")
+@healthcheck_bp.route("/")
 def healthcheck():
     """Get list of customers"""
     return response(message="Healthy!")

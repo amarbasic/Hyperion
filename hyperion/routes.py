@@ -10,8 +10,8 @@ def init_views(app=None):
         raise ValueError("cannot init views without app object")
 
     # register defined views
-    app.register_blueprint(views.customer_api)
-    app.register_blueprint(views.healthcheck_api)
+    app.register_blueprint(views.customer_bp)
+    app.register_blueprint(views.healthcheck_bp)
 
     # Handle HTTP errors
     register_error_handlers(app)
