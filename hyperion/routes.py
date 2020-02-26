@@ -31,4 +31,6 @@ def register_error_handlers(app=None):
 
     @app.errorhandler(Exception)
     def handle_exception(error):
+        message = str(error) if app.debug else "Something went wrong."
+
         return views.response(message=str(error), status=status.HTTP_500_SERVER_ERROR)
