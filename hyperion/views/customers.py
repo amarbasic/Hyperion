@@ -1,4 +1,6 @@
 """Customers views"""
+import logging
+
 from flask import Blueprint, request
 
 from hyperion.views.base import response, validate_request_body, validate_query_params
@@ -15,18 +17,16 @@ customer_bp = Blueprint("customers", __name__, url_prefix="/customers")
 @validate_query_params(customer_validators.customer_query_schema)
 def get_customers():
     """Get list of customers"""
-    return response(customer_queries.get_customer_list(request.args))
+    logging.info("Get customers")
+    customers = customer_queries.get_customer_list(request.args)
+
+    return response(customers)
 
 
 @customer_bp.route("/", methods=["POST"])
 @validate_request_body(customer_validators.create_customer_schema)
 def create_customer():
     """Create customer"""
-    return customer_services.create_customer(request.get_json())
+    new_customer = customer_services.create_customer(request.get_json())
 
-
-@customer_bp.route("/seed/")
-def seed():
-    """Seed customers"""
-    customer_services.seed_customers(10)
-    return response(customer_queries.get_customer_list(None))
+    return response(new_customer, "Customer successfully created.")
