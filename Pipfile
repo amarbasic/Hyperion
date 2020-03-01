@@ -11,11 +11,9 @@ python-dotenv = "*"
 
 [packages]
 flask = "*"
-flask-sqlalchemy = "*"
-flask-migrate = "*"
-cerberus = "*"
 psycopg2 = "*"
 gunicorn = "*"
+sqlalchemy = "*"
 
 [requires]
 python_version = "3.7"

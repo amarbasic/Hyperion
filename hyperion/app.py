@@ -9,9 +9,9 @@ def create_app(config="dev"):
     app.config.from_object(configuration[config])
 
     # Models and database registration
-    from hyperion.db import db, init_db
+    from hyperion.db import init_db
 
-    init_db(app, db)
+    init_db(app)
 
     # Views registration
     from hyperion.routes import init_views

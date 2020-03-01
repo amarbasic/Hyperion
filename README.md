@@ -15,7 +15,7 @@
 
 ## Runserver
 
-`python server.py` runs on port 9999
+`python server.py`
 
 ## Docker
 

@@ -19,6 +19,12 @@ def get_customers():
     return response(customers)
 
 
+@customer_bp.route("/seed/")
+def seed_customers():
+    customer_uc.seed_customers(total_seed=10)
+    return response(message="Seed done!")
+
+
 @customer_bp.route("/", methods=["POST"])
 def create_customer():
     """Create customer"""

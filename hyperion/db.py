@@ -1,18 +1,28 @@
+import logging
+
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
-# our global DB object (imported by models & views & everything else)
-db = SQLAlchemy()
-# support importing a functioning session query
-query = db.session.query
-migrate = Migrate()
+Session = sessionmaker(autocommit=False, autoflush=False)
+db = scoped_session(Session)
+
+Base = declarative_base()
+Base.query = db.query_property()
 
 
-def init_db(app=None, db=None):
-    """Initializes the global database object used by the app."""
-    if isinstance(app, Flask) and isinstance(db, SQLAlchemy):
-        db.init_app(app)
-        migrate.init_app(app, db)
-    else:
-        raise ValueError("Cannot init DB without db and app objects.")
+def init_db(app: Flask):
+    """Init database"""
+    engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"], convert_unicode=True)
+
+    Session.configure(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    app.teardown_appcontext(teardown_session)
+
+
+def teardown_session(exception=None):
+    """Teardown database session"""
+    logging.debug("Closing db session.")
+    db.remove()

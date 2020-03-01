@@ -1,10 +1,12 @@
-from hyperion.db import db
+"""Customer models"""
+from sqlalchemy import Column, Integer, String
+from hyperion.db import Base
 
 
-class Customer(db.Model):
+class Customer(Base):
     """Customer model"""
 
     __tablename__ = "customers"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    id = Column(Integer, primary_key=True)
+    name = Column(String)

@@ -8,3 +8,7 @@ def get_customer_list(*args, **kwargs):
 
 def create_customer(*args, **kwargs):
     return customer_services.create(**kwargs)
+
+
+def seed_customers(*, total_seed):
+    customer_services.seed(total_seed=total_seed)

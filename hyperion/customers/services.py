@@ -1,4 +1,4 @@
-"""Customer queries"""
+"""Customer services"""
 from typing import List, Dict
 
 from hyperion.db import db
@@ -17,17 +17,16 @@ def get(*, query_params: Dict = {}) -> List[Dict]:
 
 def seed(*, total_seed: int):
     """Seed"""
-    db.create_all()
     for i in range(total_seed):
-        db.session.add(Customer(name=f"Customer {i}"))
+        db.add(Customer(name=f"Customer {i}"))
 
-    db.session.commit()
+    db.commit()
 
 
 def create(*, customer_data: Dict) -> int:
     """Create a customer"""
     customer_obj = Customer(**customer_data)
-    db.session.add(customer_obj)
-    db.session.commit()
+    db.add(customer_obj)
+    db.commit()
 
     return customer_obj.id
