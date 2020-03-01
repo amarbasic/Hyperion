@@ -1,6 +1,6 @@
 """Init views"""
-from hyperion.common import status
-from hyperion import views
+from hyperion.common import status, views
+from hyperion.customers.views import customer_bp
 from . import exceptions
 
 
@@ -10,8 +10,7 @@ def init_views(app=None):
         raise ValueError("cannot init views without app object")
 
     # register defined views
-    app.register_blueprint(views.customer_bp)
-    app.register_blueprint(views.healthcheck_bp)
+    app.register_blueprint(customer_bp)
 
     # Handle HTTP errors
     register_error_handlers(app)
@@ -33,4 +32,4 @@ def register_error_handlers(app=None):
     def handle_exception(error):
         message = str(error) if app.debug else "Something went wrong."
 
-        return views.response(message=str(error), status=status.HTTP_500_SERVER_ERROR)
+        return views.response(message=message, status=status.HTTP_500_SERVER_ERROR)
