@@ -14,7 +14,7 @@ Base.query = db.query_property()
 
 def init_db(app: Flask):
     """Init database"""
-    engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"], convert_unicode=True)
+    engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
 
     Session.configure(bind=engine)
     Base.metadata.create_all(bind=engine)
