@@ -2,7 +2,7 @@
 import pytest
 
 from hyperion.app import create_app
-from hyperion.db import db as _db
+from hyperion.db import db_session as _db_session, Base
 from hyperion.config import TEST_CONFIG
 
 
@@ -23,31 +23,14 @@ def client():
     ctx.pop()
 
 
-@pytest.fixture(scope="session")
-def db(client):
-    """Session-wide test database."""
-    _db.app = client
-    _db.drop_all()
-    _db.create_all()
-
-    yield _db
-
-    _db.drop_all()
-
-
 @pytest.fixture(scope="function")
-def db_session(db):
-    """Creates a new database session for a test."""
-    connection = db.engine.connect()
-    transaction = connection.begin()
+def db_session():
+    """Clear database before and after test case."""
+    engine = _db_session.get_bind()
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
 
-    options = dict(bind=connection, binds={})
-    session = db.create_scoped_session(options=options)
+    yield _db_session
 
-    db.session = session
-
-    yield session
-
-    transaction.rollback()
-    connection.close()
-    session.remove()
+    _db_session.rollback()
+    Base.metadata.drop_all(bind=engine)

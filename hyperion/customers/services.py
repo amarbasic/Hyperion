@@ -1,7 +1,7 @@
 """Customer services"""
 from typing import List, Dict
 
-from hyperion.db import db
+from hyperion.db import db_session
 from .models import Customer
 
 
@@ -12,21 +12,21 @@ def get(*, query_params: Dict = {}) -> List[Dict]:
     if "name" in query_params:
         queryset = queryset.filter(Customer.name.contains(query_params["name"]))
 
-    return [{"id": obj.name, "name": obj.name} for obj in queryset]
+    return queryset.all()
 
 
 def seed(*, total_seed: int):
     """Seed"""
     for i in range(total_seed):
-        db.add(Customer(name=f"Customer {i}"))
+        db_session.add(Customer(name=f"Customer {i}"))
 
-    db.commit()
+    db_session.commit()
 
 
-def create(*, customer_data: Dict) -> int:
+def create(*, customer_data: Dict) -> Customer:
     """Create a customer"""
     customer_obj = Customer(**customer_data)
-    db.add(customer_obj)
-    db.commit()
+    db_session.add(customer_obj)
+    db_session.commit()
 
-    return customer_obj.id
+    return customer_obj

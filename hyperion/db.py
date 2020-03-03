@@ -6,10 +6,10 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 Session = sessionmaker(autocommit=False, autoflush=False)
-db = scoped_session(Session)
+db_session = scoped_session(Session)
 
 Base = declarative_base()
-Base.query = db.query_property()
+Base.query = db_session.query_property()
 
 
 def init_db(app: Flask):
@@ -25,4 +25,4 @@ def init_db(app: Flask):
 def teardown_session(exception=None):
     """Teardown database session"""
     logging.debug("Closing db session.")
-    db.remove()
+    db_session.remove()

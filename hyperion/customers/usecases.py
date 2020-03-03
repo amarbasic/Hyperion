@@ -3,11 +3,15 @@ from . import services as customer_services
 
 
 def get_customer_list(*args, **kwargs):
-    return customer_services.get(**kwargs)
+    customers_list = customer_services.get(**kwargs)
+
+    return [{"id": obj.name, "name": obj.name} for obj in customers_list]
 
 
-def create_customer(*args, **kwargs):
-    return customer_services.create(**kwargs)
+def create_customer(*, customer_data):
+    customer_obj = customer_services.create(customer_data=customer_data)
+
+    return {"id": customer_obj.id, "name": customer_obj.name}
 
 
 def seed_customers(*, total_seed):
