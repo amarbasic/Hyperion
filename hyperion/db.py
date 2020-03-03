@@ -17,6 +17,8 @@ def init_db(app: Flask):
     engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
 
     Session.configure(bind=engine)
+
+    # TODO: Should be remove when migrations added
     Base.metadata.create_all(bind=engine)
 
     app.teardown_appcontext(teardown_session)

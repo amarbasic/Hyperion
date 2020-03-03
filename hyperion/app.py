@@ -1,10 +1,10 @@
 """Application factory"""
 from flask import Flask
 
-from .config import configuration
+from .config import configuration, DEV_CONFIG
 
 
-def create_app(config="dev"):
+def create_app(config=DEV_CONFIG):
     app = Flask(__name__)
     app.config.from_object(configuration[config])
 
