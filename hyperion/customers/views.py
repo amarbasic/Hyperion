@@ -4,6 +4,7 @@ import logging
 from flask import Blueprint, request
 
 from hyperion.common.views import response, status
+from . import dtos as customer_dtos
 from . import usecases as customer_uc
 
 
@@ -28,7 +29,8 @@ def seed_customers():
 @customer_bp.route("/", methods=["POST"])
 def create_customer():
     """Create customer"""
-    new_customer = customer_uc.create_customer(customer_data=request.get_json())
+    customer_dto = customer_dtos.CreateCustomerDto(**request.get_json())
+    new_customer = customer_uc.create_customer(customer_data=customer_dto)
 
     return response(
         new_customer, "Customer successfully created.", status=status.HTTP_201_CREATED

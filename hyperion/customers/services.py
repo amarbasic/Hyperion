@@ -2,6 +2,7 @@
 from typing import List, Dict
 
 from hyperion.db import db_session
+from . import dtos as customer_dtos
 from .models import Customer
 
 
@@ -23,9 +24,9 @@ def seed(*, total_seed: int):
     db_session.commit()
 
 
-def create(*, customer_data: Dict) -> Customer:
+def create(*, customer_data: customer_dtos.CreateCustomerDto) -> Customer:
     """Create a customer"""
-    customer_obj = Customer(**customer_data)
+    customer_obj = Customer(**customer_data.dict())
     db_session.add(customer_obj)
     db_session.commit()
 
