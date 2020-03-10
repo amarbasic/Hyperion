@@ -13,8 +13,8 @@ python-dotenv = "*"
 flask = "*"
 psycopg2 = "*"
 gunicorn = "*"
-sqlalchemy = "*"
-pydantic = "*"
+flask-sqlalchemy = "*"
+marshmallow = "*"
 
 [requires]
 python_version = "3.7"

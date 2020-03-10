@@ -2,7 +2,7 @@
 import pytest
 
 from hyperion.app import create_app
-from hyperion.db import db_session as _db_session, Base
+from hyperion.extensions import db
 from hyperion.config import TEST_CONFIG
 
 
@@ -26,11 +26,8 @@ def client():
 @pytest.fixture(scope="function")
 def db_session():
     """Clear database before and after test case."""
-    engine = _db_session.get_bind()
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
+    db.create_all()
 
-    yield _db_session
+    yield db.session
 
-    _db_session.rollback()
-    Base.metadata.drop_all(bind=engine)
+    db.drop_all()

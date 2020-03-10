@@ -1,12 +1,14 @@
 """Customer models"""
-from sqlalchemy import Column, Integer, String
-from hyperion.db import Base
+from sqlalchemy import Column, Integer, String, Boolean
+
+from hyperion.database import db
 
 
-class Customer(Base):
+class Customer(db.Model):
     """Customer model"""
 
     __tablename__ = "customers"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
+    id = Column(Integer(), primary_key=True)
+    name = Column(String())
+    is_active = Column(Boolean(), default=True)

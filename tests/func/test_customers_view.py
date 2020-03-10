@@ -2,7 +2,6 @@
 import pytest
 
 from hyperion.common import status
-from hyperion.db import db_session
 from .fixtures import *
 
 
