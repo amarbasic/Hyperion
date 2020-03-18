@@ -2,15 +2,92 @@ from functools import wraps
 
 from flask import request, current_app
 from sqlalchemy.orm.collections import InstrumentedList
-from marshmallow import Schema, post_dump, pre_load, fields
+from marshmallow import Schema, post_dump, pre_load, fields, ValidationError
 
-from hyperion.common.utils import camelize
+from hyperion.common.utils import camelize, underscore
+
+
+class HyperionSchema(Schema):
+    """
+    Base schema from which all grouper schema's inherit
+    """
+
+    __envelope__ = True
+
+    def under(self, data, many=None):
+        items = []
+        if many:
+            for i in data:
+                items.append({underscore(key): value for key, value in i.items()})
+            return items
+        return {underscore(key): value for key, value in data.items()}
+
+    def camel(self, data, many=None):
+        items = []
+        if many:
+            for i in data:
+                items.append(
+                    {
+                        camelize(key, uppercase_first_letter=False): value
+                        for key, value in i.items()
+                    }
+                )
+            return items
+        return {
+            camelize(key, uppercase_first_letter=False): value
+            for key, value in data.items()
+        }
+
+    def wrap_with_envelope(self, data, many):
+        if many:
+            if "total" in self.context.keys():
+                return dict(total=self.context["total"], items=data)
+        return data
+
+
+class HyperionInputSchema(HyperionSchema):
+    @pre_load(pass_many=True)
+    def preprocess(self, data, many, *args, **kwargs):
+        return self.under(data, many=many)
+
+
+class HyperionOutputSchema(HyperionSchema):
+    @pre_load(pass_many=True)
+    def preprocess(self, data, many):
+        if many:
+            data = self.unwrap_envelope(data, many)
+        return self.under(data, many=many)
+
+    def unwrap_envelope(self, data, many):
+        if many:
+            if data["items"]:
+                if isinstance(data, InstrumentedList) or isinstance(data, list):
+                    self.context["total"] = len(data)
+                    return data
+                else:
+                    self.context["total"] = data["total"]
+            else:
+                self.context["total"] = 0
+                data = {"items": []}
+
+            return data["items"]
+
+        return data
+
+    @post_dump(pass_many=True)
+    def post_process(self, data, many):
+        if data:
+            data = self.camel(data, many=many)
+        if self.__envelope__:
+            return self.wrap_with_envelope(data, many=many)
+        else:
+            return data
 
 
 def format_errors(messages):
     errors = {}
     for k, v in messages.items():
-        key = k  # camelize(k, uppercase_first_letter=False)
+        key = camelize(k, uppercase_first_letter=False)
         if isinstance(v, dict):
             errors[key] = format_errors(v)
         elif isinstance(v, list):
@@ -49,20 +126,27 @@ def unwrap_pagination(data, output_schema):
     return output_schema.dump(data)
 
 
-def validate_schema(input_schema=None, output_schema=None):
+def validate_schema(
+    input_schema: HyperionInputSchema = None, output_schema: HyperionOutputSchema = None
+):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if input_schema:
+                if callable(input_schema):
+                    input_schema_to_use = input_schema()
+                else:
+                    input_schema_to_use = input_schema
+
                 if request.get_json():
                     request_data = request.get_json()
                 else:
                     request_data = request.args
 
-                data, errors = input_schema.load(request_data)
-
-                if errors:
-                    return wrap_errors(errors), 400
+                try:
+                    data = input_schema_to_use.load(request_data)
+                except ValidationError as ex:
+                    return wrap_errors(ex.messages), 400
 
                 kwargs["data"] = data
 
@@ -88,80 +172,3 @@ def validate_schema(input_schema=None, output_schema=None):
         return decorated_function
 
     return decorator
-
-
-class HyperionSchema(Schema):
-    """
-    Base schema from which all grouper schema's inherit
-    """
-
-    __envelope__ = True
-
-    def under(self, data, many=None):
-        items = []
-        if many:
-            for i in data:
-                items.append({key: value for key, value in i.items()})
-            return items
-        return {key: value for key, value in data.items()}
-
-    def camel(self, data, many=None):
-        items = []
-        if many:
-            for i in data:
-                items.append(
-                    {
-                        camelize(key, uppercase_first_letter=False): value
-                        for key, value in i.items()
-                    }
-                )
-            return items
-        return {
-            camelize(key, uppercase_first_letter=False): value
-            for key, value in data.items()
-        }
-
-    def wrap_with_envelope(self, data, many):
-        if many:
-            if "total" in self.context.keys():
-                return dict(total=self.context["total"], items=data)
-        return data
-
-
-class HyperionInputSchema(HyperionSchema):
-    @pre_load(pass_many=True)
-    def preprocess(self, data, many):
-        return self.under(data, many=many)
-
-
-class HyperionOutputSchema(HyperionSchema):
-    @pre_load(pass_many=True)
-    def preprocess(self, data, many):
-        if many:
-            data = self.unwrap_envelope(data, many)
-        return self.under(data, many=many)
-
-    def unwrap_envelope(self, data, many):
-        if many:
-            if data["items"]:
-                if isinstance(data, InstrumentedList) or isinstance(data, list):
-                    self.context["total"] = len(data)
-                    return data
-                else:
-                    self.context["total"] = data["total"]
-            else:
-                self.context["total"] = 0
-                data = {"items": []}
-
-            return data["items"]
-
-        return data
-
-    @post_dump(pass_many=True)
-    def post_process(self, data, many):
-        if data:
-            data = self.camel(data, many=many)
-        if self.__envelope__:
-            return self.wrap_with_envelope(data, many=many)
-        else:
-            return data

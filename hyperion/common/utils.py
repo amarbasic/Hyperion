@@ -34,4 +34,7 @@ def paginated_args(request):
 
 def parse_bool(value):
     """Parse bool field"""
+    if value is None:
+        return None
+
     return True if value > 0 else False

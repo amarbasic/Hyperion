@@ -1,6 +1,6 @@
 """Init views"""
 from hyperion.common import status
-from hyperion.customers.views import customer_bp
+from hyperion.customers.views import customer_bp, MyApi
 from . import exceptions
 
 
@@ -11,6 +11,9 @@ def init_views(app=None):
 
     # register defined views
     app.register_blueprint(customer_bp)
+
+    api_view = MyApi.as_view("dummy")
+    app.add_url_rule("/dummy/", view_func=api_view, methods=["GET",])
 
     # Handle HTTP errors
     register_error_handlers(app)
