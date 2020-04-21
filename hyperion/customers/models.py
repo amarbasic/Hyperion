@@ -9,6 +9,6 @@ class Customer(db.Model):
 
     __tablename__ = "customers"
 
-    id = Column(Integer(), primary_key=True)
+    customer_id = Column(Integer(), primary_key=True)
     name = Column(String())
     is_active = Column(Boolean(), default=True)

@@ -185,9 +185,6 @@ def filter(query, model, terms):
     conditions = []
     kwargs = filter_none(terms)
     for attr, value in kwargs.items():
-        # if not isinstance(value, list):
-        #     value = value.split(",")
-
         column = get_model_column(model, underscore(attr))
         if isinstance(value, str):
             conditions.append(column.ilike("%{}%".format(value)))
@@ -210,7 +207,7 @@ def sort(query, model, field, direction):
     return query.order_by(column.desc() if direction == "desc" else column.asc())
 
 
-def paginate(query, page, page_size):
+def paginate(query, page, page_size, retreive_all=False):
     """
     Returns the items given the count and page specified
     :param query:
@@ -218,8 +215,12 @@ def paginate(query, page, page_size):
     :param page_size:
     """
     page -= 1
-    items = query.offset(page_size * page).limit(page_size).all()
     total = get_count(query)
+
+    if retreive_all:
+        items = query.all()
+    else:
+        items = query.offset(page_size * page).limit(page_size).all()
 
     return dict(items=items, total=total)
 
@@ -279,8 +280,9 @@ def sort_and_page(query, model, args):
     sort_order = args.get("sort_order")
     page = args.get("page")
     page_size = args.get("page_size")
+    retreive_all = args.get("retreive_all")
 
     if sort_by and sort_order:
         query = sort(query, model, sort_by, sort_order)
 
-    return paginate(query, page, page_size)
+    return paginate(query, page, page_size, retreive_all)

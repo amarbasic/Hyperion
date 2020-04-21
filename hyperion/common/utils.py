@@ -22,13 +22,14 @@ def camelize(string, uppercase_first_letter=True):
         return string[0].lower() + camelize(string)[1:]
 
 
-def paginated_args(request):
+def paginated_args(query_params):
     """Get pagianted arguments from reuqest"""
     return {
-        "page": request.args.get("page", 1, type=int),
-        "page_size": request.args.get("page_size", 10, type=int),
-        "sort_by": request.args.get("sortBy", type=str),
-        "sort_order": request.args.get("sortOrder", "asc", type=str),
+        "page": query_params.get("page", 1, type=int),
+        "page_size": query_params.get("pageSize", 10, type=int),
+        "sort_by": query_params.get("sortBy", type=str),
+        "sort_order": query_params.get("sortOrder", "asc", type=str),
+        "retreive_all": query_params.get("retreiveAll", 0, type=int),
     }
 
 

@@ -1,33 +1,23 @@
 """Customer services"""
 from typing import List, Dict
 
-from hyperion.db import db_session
-from . import dtos as customer_dtos
+from hyperion import repository
 from .models import Customer
 
 
-def get(*, query_params: Dict = {}) -> List[Dict]:
+def get(*, filters: Dict = {}, pagination: Dict = {}) -> List[Dict]:
     """Get customer list"""
-    queryset = Customer.query
+    query = Customer.query
 
-    if "name" in query_params:
-        queryset = queryset.filter(Customer.name.contains(query_params["name"]))
+    filtered_query = repository.filter(query, Customer, filters)
 
-    return queryset.all()
-
-
-def seed(*, total_seed: int):
-    """Seed"""
-    for i in range(total_seed):
-        db_session.add(Customer(name=f"Customer {i}"))
-
-    db_session.commit()
+    return repository.sort_and_page(filtered_query, Customer, pagination)
 
 
-def create(*, customer_data: customer_dtos.CreateCustomerDto) -> Customer:
+def create(*, name: str, is_active: bool) -> Customer:
     """Create a customer"""
-    customer_obj = Customer(**customer_data.dict())
-    db_session.add(customer_obj)
-    db_session.commit()
+    customer_obj = Customer(name=name, is_active=is_active)
+    repository.create(customer_obj)
+    repository.commit()
 
     return customer_obj

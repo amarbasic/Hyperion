@@ -1,10 +1,10 @@
-from marshmallow import Schema, fields, validates, ValidationError
+from marshmallow import fields, validates, ValidationError
 
 from hyperion.common.schema import HyperionOutputSchema, HyperionInputSchema
 
 
 class CustomerListDetailsSchema(HyperionOutputSchema):
-    id = fields.Integer()
+    customer_id = fields.Integer()
     name = fields.String()
     is_active = fields.Boolean()
 
