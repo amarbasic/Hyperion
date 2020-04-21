@@ -8,7 +8,7 @@ hyperion.packagename.models
 
 `services` Module
 ---------------------
-hyperion.packagename.service
+hyperion.packagename.services
 
 
 `views` Module
