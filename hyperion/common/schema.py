@@ -123,6 +123,7 @@ def unwrap_pagination(data, output_schema):
         marshaled_data = {"total": len(data)}
         marshaled_data["items"] = output_schema.dump(data, many=True)
         return marshaled_data
+
     return output_schema.dump(data)
 
 
@@ -150,24 +151,20 @@ def validate_schema(
 
                 kwargs["data"] = data
 
-            try:
-                resp = f(*args, **kwargs)
-            except Exception as e:
-                current_app.logger.exception(e)
-                return dict(message=str(e)), 500
+            resp = f(*args, **kwargs)
+            response_data = resp
+            status = 200
 
             if isinstance(resp, tuple):
-                return resp[0], resp[1]
-
-            if not resp:
-                return dict(message="No data found"), 404
+                response_data = resp[0]
+                status = resp[1]
 
             if callable(output_schema):
                 output_schema_to_use = output_schema()
             else:
                 output_schema_to_use = output_schema
 
-            return unwrap_pagination(resp, output_schema_to_use), 200
+            return unwrap_pagination(response_data, output_schema_to_use), status
 
         return decorated_function
 

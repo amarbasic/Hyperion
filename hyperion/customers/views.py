@@ -1,7 +1,7 @@
 """Customers views"""
 import logging
 
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 
 from hyperion.common.schema import validate_schema
 from hyperion.common.utils import parse_bool, paginated_args
@@ -18,7 +18,7 @@ customer_bp = Blueprint("customers", __name__)
 )
 def create_customer(data):
     logging.info(f"Create new customer: {data}")
-    return create(name=data["name"], is_active=data["is_active"])
+    return create(name=data["name"], is_active=data["is_active"]), 201
 
 
 @customer_bp.route("/")

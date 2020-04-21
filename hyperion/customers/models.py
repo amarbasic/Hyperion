@@ -1,7 +1,7 @@
 """Customer models"""
 from sqlalchemy import Column, Integer, String, Boolean
 
-from hyperion.database import db
+from hyperion.extensions import db
 
 
 class Customer(db.Model):
