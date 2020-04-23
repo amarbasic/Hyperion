@@ -10,6 +10,9 @@ hyperion.packagename.models
 ---------------------
 hyperion.packagename.services
 
+`usecases` Module
+--------------------
+hyperion.packagename.usecases
 
 `views` Module
 -------------------

@@ -1,42 +1,21 @@
 from functools import wraps
 
-from flask import request, current_app
+from flask import request
 from sqlalchemy.orm.collections import InstrumentedList
 from marshmallow import Schema, post_dump, pre_load, fields, ValidationError
 
-from hyperion.common.utils import camelize, underscore
+
+# TODO: Move to common
+def camelcase(s):
+    parts = iter(s.split("_"))
+    return next(parts) + "".join(i.title() for i in parts)
 
 
 class HyperionSchema(Schema):
-    """
-    Base schema from which all grouper schema's inherit
-    """
-
     __envelope__ = True
 
-    def under(self, data, many=None):
-        items = []
-        if many:
-            for i in data:
-                items.append({underscore(key): value for key, value in i.items()})
-            return items
-        return {underscore(key): value for key, value in data.items()}
-
-    def camel(self, data, many=None):
-        items = []
-        if many:
-            for i in data:
-                items.append(
-                    {
-                        camelize(key, uppercase_first_letter=False): value
-                        for key, value in i.items()
-                    }
-                )
-            return items
-        return {
-            camelize(key, uppercase_first_letter=False): value
-            for key, value in data.items()
-        }
+    def on_bind_field(self, field_name, field_obj):
+        field_obj.data_key = camelcase(field_obj.data_key or field_name)
 
     def wrap_with_envelope(self, data, many):
         if many:
@@ -46,9 +25,7 @@ class HyperionSchema(Schema):
 
 
 class HyperionInputSchema(HyperionSchema):
-    @pre_load(pass_many=True)
-    def preprocess(self, data, many, *args, **kwargs):
-        return self.under(data, many=many)
+    pass
 
 
 class HyperionOutputSchema(HyperionSchema):
@@ -76,34 +53,13 @@ class HyperionOutputSchema(HyperionSchema):
 
     @post_dump(pass_many=True)
     def post_process(self, data, many):
-        if data:
-            data = self.camel(data, many=many)
         if self.__envelope__:
             return self.wrap_with_envelope(data, many=many)
         else:
             return data
 
 
-def format_errors(messages):
-    errors = {}
-    for k, v in messages.items():
-        key = camelize(k, uppercase_first_letter=False)
-        if isinstance(v, dict):
-            errors[key] = format_errors(v)
-        elif isinstance(v, list):
-            errors[key] = v[0]
-    return errors
-
-
-def wrap_errors(messages):
-    errors = dict(message="Validation Error.")
-    if messages.get("_schema"):
-        errors["reasons"] = {"Schema": {"rule": messages["_schema"]}}
-    else:
-        errors["reasons"] = format_errors(messages)
-    return errors
-
-
+# TODO: Drop this
 def unwrap_pagination(data, output_schema):
     if not output_schema:
         return data
@@ -147,7 +103,7 @@ def validate_schema(
                 try:
                     data = input_schema_to_use.load(request_data)
                 except ValidationError as ex:
-                    return wrap_errors(ex.messages), 400
+                    return ex.messages, 400
 
                 kwargs["data"] = data
 

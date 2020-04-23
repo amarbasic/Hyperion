@@ -1,12 +1,13 @@
 """Customers views"""
 import logging
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 
 from hyperion.common.schema import validate_schema
 from hyperion.common.utils import parse_bool, paginated_args
 from .schemas import CustomerListDetailsSchema, CustomerCreateSchema
-from .services import create, get
+from . import services as customer_services
+from . import usecases as customer_uc
 
 
 customer_bp = Blueprint("customers", __name__)
@@ -18,7 +19,10 @@ customer_bp = Blueprint("customers", __name__)
 )
 def create_customer(data):
     logging.info(f"Create new customer: {data}")
-    return create(name=data["name"], is_active=data["is_active"]), 201
+    return (
+        customer_uc.create_customer(name=data["name"], is_active=data["is_active"]),
+        201,
+    )
 
 
 @customer_bp.route("/")
@@ -29,4 +33,6 @@ def get_customers():
         "is_active": parse_bool(request.args.get("isActive", type=int)),
     }
 
-    return get(filters=filters, pagination=paginated_args(request.args))
+    return customer_services.get(
+        filters=filters, pagination=paginated_args(request.args)
+    )

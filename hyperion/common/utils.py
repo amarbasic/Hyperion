@@ -12,16 +12,6 @@ def underscore(word):
     return word.lower()
 
 
-def camelize(string, uppercase_first_letter=True):
-    """
-    Convert strings to CamelCase.
-    """
-    if uppercase_first_letter:
-        return re.sub(r"(?:^|_)(.)", lambda m: m.group(1).upper(), string)
-    else:
-        return string[0].lower() + camelize(string)[1:]
-
-
 def paginated_args(query_params):
     """Get pagianted arguments from reuqest"""
     return {
